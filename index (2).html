@@ -1,0 +1,37 @@
+function addItem() {
+    let name = document.getElementById("name").value;
+    let price = document.getElementById("price").value;
+
+    fetch("http://localhost:3000/menu", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, price })
+    })
+    .then(() => loadItems());
+}
+function loadItems() {
+    fetch("http://localhost:3000/menu")
+    .then(res => res.json())
+    .then(data => {
+        let list = document.getElementById("list");
+        list.innerHTML = "";
+
+        data.forEach((item, index) => {
+            list.innerHTML += `
+                <p>
+                    ${item.name} - ${item.price}
+                    <button onclick="deleteItem(${index})">Delete</button>
+                </p>
+            `;
+        });
+    });
+}
+function deleteItem(index) {
+    fetch(`http://localhost:3000/menu/${index}`, {
+        method: "DELETE"
+    })
+    .then(() => loadItems());
+}
+loadItems();
